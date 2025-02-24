@@ -5,11 +5,10 @@
 
 <div class="page">
     <section class="contact">
-
         <h1>Contact</h1>
         <p>@ViewBag.Message</p>
-        <form method="post" class="form-contactpagina">
 
+        <form method="post" class="form-contactpagina">
             <div class="form-contactpagina__inputelement fx-col">
                 <label for="firstname">Voornaam: </label>
                 <input type="text" asp-for="FirstName" name="firstname" id="firstname" required>
@@ -22,7 +21,7 @@
 
             <div class="form-contactpagina__inputelement fx-col">
                 <label for="email">E-mailadres: </label>
-                <input type="email" asp-for="Email" name="email" id="email">
+                <input type="email" asp-for="Email" name="email" id="email" required>
             </div>
 
             <div class="form-contactpagina__inputelement fx-col">
@@ -30,14 +29,52 @@
                 <input type="tel" asp-for="Phone" name="phone" id="phone">
             </div>
 
-            <div class="form-contactpagina__inputelement">
-                <input type="submit" value="Verstuur!">
+            <div class="form-contactpagina__inputelement fx-col">
+                <label for="Message">Bericht: </label>
+                <input type="text" asp-for="Message" name="message" id="message" required>
             </div>
 
-        </form>
+            <div class="form-contactpagina__inputelement fx-col">
+                <label for="Subject">Onderwerp: </label>
+                <input type="text" asp-for="Subject" name="subject" id="subject" required>
+            </div>
 
+            <div class="g-recaptcha" data-sitekey="6LfCCeEqAAAAAHwyMzYrOdOO3H23xFkr50kB_A32"></div>
+
+            <div class="form-contactpagina__inputelement">
+                <input type="submit" value="Verstuur!">
+                <input type="reset" value="Reset">
+            </div>
+        </form>
     </section>
 </div>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector('.form-contactpagina');
+        const submitButton = form.querySelector('input[type="submit"]');
+        const inputs = form.querySelectorAll('input[required]');
+
+        const checkFormValidity = () => {
+            let isValid = true;
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    isValid = false;
+                }
+            });
+            submitButton.disabled = !isValid;
+        };
+
+        inputs.forEach(input => {
+            input.addEventListener('input', checkFormValidity);
+        });
+
+        checkFormValidity(); // Initial check
+    });
+</script>
+
 
 
 <script>

@@ -19,24 +19,21 @@ namespace Showcase_Contactpagina.Controllers
             _httpClient = httpClient;
             _httpClient.BaseAddress = new Uri("https://localhost:7278");
 
-            // ✅ Haal de reCAPTCHA secret key op uit de configuratie
             _recaptchaSecret = configuration["Recaptcha:SecretKey"];
         }
 
-        // GET: ContactController
         public ActionResult Index()
         {
             return View();
         }
 
-        // POST: ContactController
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Index(Contactform form)
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.Message = "De ingevulde velden voldoen niet aan de gestelde voorwaarden";
+                TempData["Message"] = "De ingevulde velden voldoen niet aan de gestelde voorwaarden";
                 return View();
             }
 
@@ -47,7 +44,7 @@ namespace Showcase_Contactpagina.Controllers
             bool isRecaptchaValid = await ValidateRecaptcha(recaptchaResponse);
             if (!isRecaptchaValid)
             {
-                ViewBag.Message = "reCAPTCHA validatie mislukt. Probeer opnieuw.";
+                TempData["Message"] = "reCAPTCHA validatie mislukt. Probeer opnieuw.";
                 return View();
             }
 
@@ -59,16 +56,16 @@ namespace Showcase_Contactpagina.Controllers
             var json = JsonConvert.SerializeObject(form, settings);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            // post request naar shocaseapi
+            // post request naar showcaseapi
             HttpResponseMessage response = await _httpClient.PostAsync("/api/mail", content);
 
             if (!response.IsSuccessStatusCode)
             {
-                ViewBag.Message = "Er is iets misgegaan";
+                TempData["Message"] = "Er is iets misgegaan";
                 return View();
             }
 
-            ViewBag.Message = "Het contactformulier is verstuurd";
+            TempData["Message"] = "Het contactformulier is verstuurd";
             return View();
         }
 
@@ -88,7 +85,7 @@ namespace Showcase_Contactpagina.Controllers
     }
 
     
-    public class RecaptchaResponse
+public class RecaptchaResponse
     {
         [JsonProperty("success")]
         public bool Success { get; set; }

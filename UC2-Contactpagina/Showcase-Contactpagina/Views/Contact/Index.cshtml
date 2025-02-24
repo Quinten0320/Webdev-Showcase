@@ -6,7 +6,10 @@
 <div class="page">
     <section class="contact">
         <h1>Contact</h1>
-        <p>@ViewBag.Message</p>
+        @if (TempData["Message"] != null)
+        {
+            <p>@TempData["Message"]</p>
+        }
 
         <form method="post" class="form-contactpagina">
             <div class="form-contactpagina__inputelement fx-col">
@@ -46,6 +49,13 @@
                 <input type="reset" value="Reset">
             </div>
         </form>
+        <div id="spinner" style="display:none;">Loading...
+
+            <img src="Images/Spinner-3.gif" alt="Loading...">
+
+        </div> 
+
+
     </section>
 </div>
 
@@ -56,6 +66,7 @@
         const form = document.querySelector('.form-contactpagina');
         const submitButton = form.querySelector('input[type="submit"]');
         const inputs = form.querySelectorAll('input[required]');
+        const spinner = document.getElementById('spinner');
 
         const checkFormValidity = () => {
             let isValid = true;
@@ -71,9 +82,32 @@
             input.addEventListener('input', checkFormValidity);
         });
 
-        checkFormValidity(); // Initial check
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault(); // anders werkt spinner niet
+            spinner.style.display = 'block'; 
+
+            const formData = new FormData(form);
+
+            // verstuur via api
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                form.reset();
+                spinner.style.display = 'none';
+                TempData["Message"] = "Het contactformulier is verstuurd";
+            } else {
+                spinner.style.display = 'none';
+                TempData["Message"] = "Er is iets misgegaan";
+            }
+        });
+
+        checkFormValidity();
     });
 </script>
+
 
 
 
